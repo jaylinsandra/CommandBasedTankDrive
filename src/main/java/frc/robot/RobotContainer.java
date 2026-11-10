@@ -16,7 +16,8 @@ private final CommandXboxController robotController =
     new CommandXboxController(0);
   private final DriveTrain drivetrain = new DriveTrain();
   private final Wrist wrist = new Wrist();
-
+  private final Turret turret = new Turret();
+  private final Launcher launcher = new Launcher();
 
   public RobotContainer() {
     configureBindings();
@@ -31,16 +32,30 @@ private final CommandXboxController robotController =
     Commands.runEnd(
         () -> wrist.moveWrist(0.1),
         () -> wrist.stopWrist(),
-        wrist
-    )
+        wrist)
     );
     robotController.povDown().whileTrue(
     Commands.runEnd(
         () -> wrist.moveWrist(-0.1),
         () -> wrist.stopWrist(),
-        wrist
-    )
+        wrist)
     );
+
+
+    robotController.povLeft().whileTrue(
+    Commands.runEnd(
+        () -> turret.moveTurret(0.1),
+        () -> turret.stopTurret(),
+        turret)
+    );
+    robotController.povRight().whileTrue(
+    Commands.runEnd(
+        () -> turret.moveTurret(-0.1),
+        () -> turret.stopTurret(),
+        turret)
+    );
+
+
   }
 
   public Command getAutonomousCommand() {

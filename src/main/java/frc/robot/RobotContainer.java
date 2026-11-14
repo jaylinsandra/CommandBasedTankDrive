@@ -57,9 +57,6 @@ private final CommandXboxController robotController =
 
     robotController.a().onTrue(launcher.fireNextCommand());
     robotController.y().onTrue(launcher.fireAllVolleyCommand());
-    robotController.back().onTrue(launcher.resetBarrelsCommand());
-
-
 
 
   }

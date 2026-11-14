@@ -21,6 +21,7 @@ public class Launcher extends SubsystemBase {
     };
     private int currentBarrel = 0;
     private static final double fire_pulse_seconds = 0.15;
+    private static final double volley_delay = 0.04;
 
     public Launcher() {
         hub.enableCompressorDigital();
@@ -34,19 +35,34 @@ public class Launcher extends SubsystemBase {
         }
 
     public Command fireBarrelCommand(int barrelIndex) {
-        
+        return Commands.sequence(
+            runOnce(() -> barrels[barrelIndex].set(true)),
+            Commands.waitSeconds(fire_pulse_seconds),
+            runOnce(() -> barrels[barrelIndex].set(false))
+        );
     }
 
     public Command fireNextCommand() {
-
+        return Commands.defer(() -> {
+            int barrelToFire = currentBarrel;
+            currentBarrel = (currentBarrel + 1) % barrels.length;
+            
+            return fireBarrelCommand(barrelToFire);
+        }, Set.of(this));
     }
 
     public Command fireAllVolleyCommand() {
-
-    }
-
-    public Command resetBarrelsCommand() {
-
+        Command[] volley = new Command[barrels.length * 2];
+        for (int i = 0; i < barrels.length; i++) {
+            volley[i * 2] = fireBarrelCommand(i);
+            if (i < barrels.length - 1) {
+                volley[i * 2 + 1] = Commands.waitSeconds(volley_delay);
+            } else {
+                volley[i * 2 + 1] = Commands.none();
+        }
+        }
+        return Commands.sequence(volley)
+        .andThen(runOnce(() -> currentBarrel = 0));
     }
 
     public void periodic() {

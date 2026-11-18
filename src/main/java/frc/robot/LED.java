@@ -12,7 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class LED extends SubsystemBase {
 
     private final AddressableLED ledStrip = new AddressableLED(0);
-    private final AddressableLEDBuffer ledBuffer =new AddressableLEDBuffer(60);
+    private final AddressableLEDBuffer ledBuffer =new AddressableLEDBuffer(94);
     
     public LED() {
         ledStrip.setLength(ledBuffer.getLength());
@@ -35,13 +35,13 @@ private void setWhite() {
 }
 
 private void setRipple(int position) {
-    turnOff();
     for (int i = 0; i <= position; i++) {
         ledBuffer.setRGB(i, 255, 255, 255);
     }
     ledStrip.setData(ledBuffer);
 }
-    public Command playAnimationCommand() {
+
+public Command playAnimationCommand() {
 
     List<Command> animation = new ArrayList<>();
 
@@ -56,21 +56,17 @@ private void setRipple(int position) {
     }
 
     //strobe
-    for (int i = 0; i < 3; i++) {
-            animation.add(Commands.runOnce(() -> {
+    Command strobe = Commands.sequence(
+        Commands.runOnce(() -> {
             setWhite();
             Logger.recordOutput("LED/AnimationPhase", "Strobe");
-            }, this));
-            animation.add(Commands.waitSeconds(0.25));
-            animation.add(Commands.runOnce(() -> {
+        }, this),
+        Commands.waitSeconds(0.25),
+        Commands.runOnce(() -> {
             turnOff();
-            }, this));
-            animation.add(Commands.waitSeconds(0.25));
-        }    
-            animation.add(Commands.runOnce(() -> {
-            turnOff();
-            Logger.recordOutput("LED/AnimationPhase", "Off");
-            }, this));
+        }, this)
+    ); 
+    animation.add(strobe.repeatedly().withTimeout(7));  
 
     return Commands.sequence(animation.toArray(new Command[0])).finallyDo(interrupted -> turnOff());
 }

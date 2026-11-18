@@ -18,6 +18,7 @@ private final CommandXboxController robotController =
   private final Wrist wrist = new Wrist();
   private final Turret turret = new Turret();
   private final Launcher launcher = new Launcher();
+  private final LED led = new LED();
 
   public RobotContainer() {
     configureBindings();
@@ -25,7 +26,13 @@ private final CommandXboxController robotController =
 
   private void configureBindings() {
 
-    drivetrain.setDefaultCommand(Commands.run(()-> drivetrain.drive.tankDrive(robotController.getLeftY(), robotController.getRightY()), drivetrain));
+  drivetrain.setDefaultCommand(Commands.run(
+    () -> drivetrain.tankDrive(
+        robotController.getLeftY(),
+        robotController.getRightY()
+    ),
+    drivetrain
+    ));
     
 
     robotController.povUp().whileTrue(
@@ -58,7 +65,10 @@ private final CommandXboxController robotController =
     robotController.a().onTrue(launcher.fireNextCommand());
     robotController.y().onTrue(launcher.fireAllVolleyCommand());
 
-
+    //led
+    robotController.b().onTrue(led.playAnimationCommand());
+    
+    
   }
 
   public Command getAutonomousCommand() {

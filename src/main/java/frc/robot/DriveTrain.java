@@ -1,19 +1,24 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.PersistMode;
 import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
+import org.littletonrobotics.junction.Logger;
 
 
 public class DriveTrain extends SubsystemBase {
+
+    public void tankDrive(double leftSpeed, double rightSpeed) {
+    Logger.recordOutput("DriveTrain/LeftSpeed", leftSpeed);
+    Logger.recordOutput("DriveTrain/RightSpeed", rightSpeed);
+
+    drive.tankDrive(leftSpeed, rightSpeed);
+}
+
     private  final int leftmotor1port = 2;
     private  final int leftmotor2port = 4;
     private  final int rightmotor1port = 1;
